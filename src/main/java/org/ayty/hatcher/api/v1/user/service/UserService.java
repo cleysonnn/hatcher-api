@@ -3,6 +3,9 @@ package org.ayty.hatcher.api.v1.user.service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.ServletException;
+
+import org.ayty.hatcher.JWT.JWTServices;
 import org.ayty.hatcher.api.v1.user.Entity.hatcher_user;
 import org.ayty.hatcher.api.v1.user.jpa.UserJPA;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,8 @@ public class UserService {
 	
 	@Autowired
 	private UserJPA userjpa;
+	@Autowired
+	private JWTServices jwtService;
 	
 	
 	public hatcher_user adiconarUser(hatcher_user user) {
@@ -27,4 +32,32 @@ public class UserService {
 		return userjpa.findById(id);
 		
 	}
+	
+	public List<hatcher_user> getUsersbyLogin() {
+		return userjpa.findAll();
+	}
+	
+	
+
+	
+	
+
+	
+	
+	
+	
+	private boolean usuarioTemPermissao(String authorizationHeader, String email) throws ServletException {
+		String subject = jwtService.getSujeitoDoToken(authorizationHeader);
+		Optional<hatcher_user> optUsuario = userjpa.findByLogin(subject);
+		return optUsuario.isPresent() && optUsuario.get().getEmail().equals(email);
+	}
+
+	public boolean validaUsuarioSenha(hatcher_user usuario) {
+		Optional<hatcher_user> optUsuario = userjpa.findByLogin(usuario.getEmail());
+		if (optUsuario.isPresent() && optUsuario.get().getSenha().equals(usuario.getSenha()))
+			return true;
+		return false;
+	}
+	
+	
 }

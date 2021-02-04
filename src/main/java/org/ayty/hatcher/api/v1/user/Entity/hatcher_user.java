@@ -12,13 +12,14 @@ public class hatcher_user {
 	private long id;
 
 
-
+	@Column(unique = true )
 	private String login;
 	@Column(unique = true )
 	private String email;
 	@Column(name = "nome")
 	private String nomeCompleto;
 	private boolean admin;
+	private String senha;
 	
 
 
@@ -52,14 +53,40 @@ public class hatcher_user {
 	public void setNomeCompleto(String nomeCompleto) {
 		this.nomeCompleto = nomeCompleto;
 	}
+	
+	
 
 
 
 
 
-	@Override
-	public String toString() {
-		return "User [login=" + login + ", email=" + email + ", nomeCompleto=" + nomeCompleto + "]";
+	public long getId() {
+		return id;
+	}
+
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+
+	public boolean isAdmin() {
+		return admin;
+	}
+
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
+	}
+
+
+	public String getSenha() {
+		return senha;
+	}
+
+
+	public void setSenha(String senha) {
+		this.senha = senha;
 	}
 
 
@@ -69,13 +96,28 @@ public class hatcher_user {
 	}
 
 
-	public hatcher_user(long id, String login, String email, String nomeCompleto) {
+	public hatcher_user(long id, String login, String email, String nomeCompleto, boolean admin, String senha) {
 		super();
 		this.id = id;
 		this.login = login;
 		this.email = email;
 		this.nomeCompleto = nomeCompleto;
+		this.admin = admin;
+		this.senha = senha;
 	}
+
+
+	@Override
+	public String toString() {
+		return "hatcher_user [id=" + id + ", login=" + login + ", email=" + email + ", nomeCompleto=" + nomeCompleto
+				+ ", admin=" + admin + ", senha=" + senha + "]";
+	}
+
+
+	
+
+
+	
 	
 	
 	

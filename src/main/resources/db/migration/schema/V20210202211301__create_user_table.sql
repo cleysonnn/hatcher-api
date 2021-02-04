@@ -4,6 +4,7 @@ CREATE TABLE hatcher_user (
     email varchar (255) unique,
     login varchar (200),
     admin boolean ,
+    senha varchar(255),
     PRIMARY KEY (id)
 
 );

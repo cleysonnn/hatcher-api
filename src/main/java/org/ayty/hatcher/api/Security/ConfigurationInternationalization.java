@@ -8,10 +8,10 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.util.Locale;
 
-@Configuration
+//@Configuration
 public class ConfigurationInternationalization {
 
-    @Bean
+   /* @Bean
     public MessageSource messageSource(){
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("classpath:messages");
@@ -25,6 +25,6 @@ public class ConfigurationInternationalization {
         LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
         bean.setValidationMessageSource(messageSource());
         return bean;
-    }
+    }*/
 
 }
