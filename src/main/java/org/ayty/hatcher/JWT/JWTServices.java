@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
@@ -22,38 +24,34 @@ public class JWTServices {
 
 	@Autowired
 	private UserService usuariosService;
-	
+
 	@Value("${security.jwt.token.expire-length}")
-    private String expiration;
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
-    
-    
-    public RespostaDeLogin autentica(hatcher_user user) {
-    	if (!usuariosService.validaUsuarioSenha(user)) {
+	private String expiration;
+	@Value("${security.jwt.token.secret-key}")
+	private String secretKey;
+
+	public RespostaDeLogin autentica(hatcher_user user) {
+		if (!usuariosService.validaUsuarioSenha(user)) {
 			return new RespostaDeLogin("Usuario ou senha invalidos. Nao foi realizado o login.");
 		}
 
 		String token = geraToken(user.getEmail());
 		return new RespostaDeLogin(token);
-    	
-    }
-    
-    private String geraToken(String email) {
-    	Long expSting = Long.valueOf(expiration);
-    	LocalDateTime expireLength = LocalDateTime.now().plusMinutes(expSting);
-    	Instant instant = expireLength.atZone(ZoneId.systemDefault()).toInstant();
-    	Date date = Date.from(instant);
-    	
-    	
-		return Jwts.builder().setSubject(email)
-				.signWith(SignatureAlgorithm.HS512, secretKey)
-				.setExpiration(date)
-				.compact();//1week
+
 	}
-    
-    public String getSujeitoDoToken(String authorizationHeader) throws ServletException {
-		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+
+	private String geraToken(String login) {
+		Long expSting = Long.valueOf(expiration);
+		LocalDateTime expireLength = LocalDateTime.now().plusMinutes(expSting);
+		Instant instant = expireLength.atZone(ZoneId.systemDefault()).toInstant();
+		Date date = Date.from(instant);
+
+		return Jwts.builder().setSubject(login).signWith(SignatureAlgorithm.HS512, secretKey).setExpiration(date)
+				.compact();// 1week
+	}
+
+	public String getSujeitoDoToken(String authorizationHeader) throws ServletException {
+		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer")) {
 			throw new ServletException("Token inexistente ou mal formatado!");
 		}
 
@@ -69,4 +67,31 @@ public class JWTServices {
 		return subject;
 	}
 	
+	
+	
+	//---------------------------------------//
+
+	private Claims getClaim(String token) throws ExpiredJwtException {
+		return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+	}
+
+	public boolean validToken(String token) {
+		try {
+			Claims claims = getClaim(token);
+			Date expirationDate = claims.getExpiration();
+			LocalDateTime date = expirationDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+			return !LocalDateTime.now().isAfter(date);
+
+		} catch (Exception e) {
+			return false;
+		}
+
+	}
+	
+	 public String getUserLogin(String token )  throws ExpiredJwtException {
+	        return (String) getClaim(token).getSubject();
+
+	    }
+	 
+
 }

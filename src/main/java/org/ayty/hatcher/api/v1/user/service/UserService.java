@@ -20,6 +20,7 @@ public class UserService {
 	private JWTServices jwtService;
 	
 	
+	
 	public hatcher_user adiconarUser(hatcher_user user) {
 		return userjpa.save(user);
 	}
@@ -46,10 +47,10 @@ public class UserService {
 	
 	
 	
-	private boolean usuarioTemPermissao(String authorizationHeader, String email) throws ServletException {
+	private boolean usuarioTemPermissao(String authorizationHeader, String login) throws ServletException {
 		String subject = jwtService.getSujeitoDoToken(authorizationHeader);
 		Optional<hatcher_user> optUsuario = userjpa.findByLogin(subject);
-		return optUsuario.isPresent() && optUsuario.get().getEmail().equals(email);
+		return optUsuario.isPresent() && optUsuario.get().getEmail().equals(login);
 	}
 
 	public boolean validaUsuarioSenha(hatcher_user usuario) {
